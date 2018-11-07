@@ -90,27 +90,20 @@ import json
 historyDef = json.load(open('json_history/historyDef.json'))
 
 model8 = MLP_act_func('sigmoid')
-model9 = MLP_act_func('prelu')
-model10 = MLP_act_func('softplus')
+model9 = MLP_act_func('softplus')
 
 history8 = model8.fit(X_train, Y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=2,
+                    verbose=1,
                     validation_data=(X_test, Y_test))
 saveHistory(history8,'history8')
 history9 = model9.fit(X_train, Y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=2,
+                    verbose=1,
                     validation_data=(X_test, Y_test))
 saveHistory(history9,'history9')
-history10 = model10.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=2,
-                    validation_data=(X_test, Y_test))
-saveHistory(history10,'history10')
 
-plot_train_acc(7, [historyDef, history8, history9, history10])
-plot_val_acc(8, [historyDef, history8, history9, history10])
+plot_train_acc(7, [historyDef, history8, history9])
+plot_val_acc(8, [historyDef, history8, history9])

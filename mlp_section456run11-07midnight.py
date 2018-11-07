@@ -104,23 +104,6 @@ def MLP_act_func(act_func):
     #model.summary()
     return(model)
 
-def MLP_loss_func(loss_func):
-    model = Sequential()
-    model.add(Dense(512, input_shape=X_train.shape[1:]))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(256))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(10))
-    model.add(Activation('softmax'))
-
-    model.compile(loss=loss_func,
-                  optimizer='sgd',
-                  metrics=['accuracy'])
-    #model.summary()
-    return(model)
-
 import json
 historyDef = json.load(open('json_history/historyDef.json'))
 # model 5 has 3 hiden layers
@@ -171,40 +154,20 @@ plot_train_acc(7, [historyDef, history6, history7])
 plot_val_acc(8, [historyDef, history6, history7])
 
 model8 = MLP_act_func('sigmoid')
-model9 = MLP_act_func('prelu')
-model10 = MLP_act_func('softplus')
+model9 = MLP_act_func('softplus')
 
 history8 = model8.fit(X_train, Y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=2,
+                    verbose=1,
                     validation_data=(X_test, Y_test))
 saveHistory(history8,'history8')
 history9 = model9.fit(X_train, Y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=2,
+                    verbose=1,
                     validation_data=(X_test, Y_test))
 saveHistory(history9,'history9')
-history10 = model10.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=2,
-                    validation_data=(X_test, Y_test))
-saveHistory(history10,'history10')
 
-plot_train_acc(7, [historyDef, history8, history9, history10])
-plot_val_acc(8, [historyDef, history8, history9, history10])
-
-model11 = MLP_loss_func('sparse_categorical_crossentropy')
-
-
-history11 = model11.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=2,
-                    validation_data=(X_test, Y_test))
-saveHistory(history11,'history11')
-
-plot_train_acc(10, [historyDef, history11])
-plot_val_acc(12, [historyDef, history11])
+plot_train_acc(7, [historyDef, history8, history9])
+plot_val_acc(8, [historyDef, history8, history9])
