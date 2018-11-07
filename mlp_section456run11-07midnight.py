@@ -40,7 +40,7 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 def plot_train_acc(i, historyList):
     fig = plt.figure()
     for index, his in enumerate(historyList):
-        plt.plot(range(nb_epoch),his.history['acc'],label='training'+str(index))
+        plt.plot(range(nb_epoch),his['acc'],label='training'+str(index))
     plt.legend(loc=0)
     plt.xlabel('epochs')
     plt.ylabel('training_accuracy')
@@ -54,7 +54,7 @@ def plot_train_acc(i, historyList):
 def plot_val_acc(i, historyList):
     fig = plt.figure()
     for index, his in enumerate(historyList):
-        plt.plot(range(nb_epoch),his.history['val_acc'],label='validation'+str(index))
+        plt.plot(range(nb_epoch),his['val_acc'],label='validation'+str(index))
     plt.legend(loc=0)
     plt.xlabel('epochs')
     plt.ylabel('validation_accuracy')
@@ -131,8 +131,8 @@ history5 = model5.fit(X_train, Y_train,
                     validation_data=(X_test, Y_test))
 saveHistory(history5,'history5')
            
-plot_train_acc(5 [historyDef, history5])
-plot_val_acc(6, [historyDef, history5])
+plot_train_acc(5 [historyDef, history5.history])
+plot_val_acc(6, [historyDef, history5.history])
 
 model6 = MLP_learningRate(0.3, 0.0)
 model7 = MLP_learningRate(0.1, 0.1/nb_epoch)
@@ -150,8 +150,8 @@ history7 = model7.fit(X_train, Y_train,
                     validation_data=(X_test, Y_test))
 saveHistory(history7,'history7')
 
-plot_train_acc(7, [historyDef, history6, history7])
-plot_val_acc(8, [historyDef, history6, history7])
+plot_train_acc(7, [historyDef, history6.history, history7.history])
+plot_val_acc(8, [historyDef, history6.history, history7.history])
 
 model8 = MLP_act_func('sigmoid')
 model9 = MLP_act_func('softplus')
@@ -169,5 +169,5 @@ history9 = model9.fit(X_train, Y_train,
                     validation_data=(X_test, Y_test))
 saveHistory(history9,'history9')
 
-plot_train_acc(7, [historyDef, history8, history9])
-plot_val_acc(8, [historyDef, history8, history9])
+plot_train_acc(7, [historyDef, history8.history, history9.history])
+plot_val_acc(8, [historyDef, history8.history, history9.history])
