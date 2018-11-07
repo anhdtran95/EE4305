@@ -47,8 +47,8 @@ def plot_train_acc(i, historyList):
     plt.xlim([1,nb_epoch])
     plt.grid(True)
     plt.title("Training Accuracy Comparison")
-    plt.show()
-    fig.savefig('img/'+str(i)+'-training-accuracy.png')
+    #plt.show()
+    fig.savefig('img/cnn'+str(i)+'-training-accuracy.png')
     plt.close(fig)
     
 def plot_val_acc(i, historyList):
@@ -61,41 +61,16 @@ def plot_val_acc(i, historyList):
     plt.xlim([1,nb_epoch])
     plt.grid(True)
     plt.title("Validation Accuracy Comparison")
-    plt.show()
-    fig.savefig('img/'+str(i)+'-validation-accuracy.png')
+    #plt.show()
+    fig.savefig('img/cnn'+str(i)+'-validation-accuracy.png')
     plt.close(fig)
     
 def saveHistory(history, filename):
     import json
     json.dump(history.history, open('json_history/'+filename+'.json', 'w+'))
-
-def CNN_shape(shape):
-
-    model = Sequential()
-    model.add(Conv2D(32, (3, 3), padding='same', input_shape=x_train.shape[1:]))
-    model.add(Activation('relu'))
-    model.add(Conv2D(32,(3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-
-    model.add(Flatten())
-    model.add(Dense(shape))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
-    return model
-
-modelDef = CNN_shape(512) #default model
-historyDef = modelDef.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=1,
-                    validation_data=(X_test, Y_test))
-saveHistory(historyDef,'historyDef_CNN')
+    
+import json
+historyDef = json.load(open('json_history/historyDef_CNN.json'))
 
 def CNN_drop_rate(drop_rate1, drop_rate2):
 

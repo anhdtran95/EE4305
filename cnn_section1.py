@@ -47,8 +47,8 @@ def plot_train_acc(i, historyList):
     plt.xlim([1,nb_epoch])
     plt.grid(True)
     plt.title("Training Accuracy Comparison")
-    plt.show()
-    fig.savefig('img/'+str(i)+'-training-accuracy.png')
+    #plt.show()
+    fig.savefig('img/cnn'+str(i)+'-training-accuracy.png')
     plt.close(fig)
     
 def plot_val_acc(i, historyList):
@@ -61,8 +61,8 @@ def plot_val_acc(i, historyList):
     plt.xlim([1,nb_epoch])
     plt.grid(True)
     plt.title("Validation Accuracy Comparison")
-    plt.show()
-    fig.savefig('img/'+str(i)+'-validation-accuracy.png')
+    #plt.show()
+    fig.savefig('img/cnn'+str(i)+'-validation-accuracy.png')
     plt.close(fig)
     
 def saveHistory(history, filename):
