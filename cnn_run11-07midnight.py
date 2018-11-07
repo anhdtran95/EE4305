@@ -23,18 +23,15 @@ nb_classes = 10
 nb_epoch = 100
 batch_size = 128
 
-(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
-X_train = X_train.reshape(50000, 32 * 32 * 3)
-X_test = X_test.reshape(10000, 32 * 32 * 3)
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255.0
+x_test /= 255.0
 
-X_train = X_train.astype('float32')
-X_test = X_test.astype('float32')
-X_train /= 255.0
-X_test /= 255.0
-
-Y_train = np_utils.to_categorical(y_train, nb_classes)
-Y_test = np_utils.to_categorical(y_test, nb_classes)
+y_train = np_utils.to_categorical(y_train, nb_classes)
+y_test = np_utils.to_categorical(y_test, nb_classes)
 
 
 def plot_train_acc(i, historyList):
@@ -48,7 +45,7 @@ def plot_train_acc(i, historyList):
     plt.grid(True)
     plt.title("Training Accuracy Comparison")
     #plt.show()
-    fig.savefig('img/cnn'+str(i)+'-training-accuracy.png')
+    fig.savefig('img/'+str(i)+'-training-accuracy_cnn.png')
     plt.close(fig)
     
 def plot_val_acc(i, historyList):
@@ -62,14 +59,67 @@ def plot_val_acc(i, historyList):
     plt.grid(True)
     plt.title("Validation Accuracy Comparison")
     #plt.show()
-    fig.savefig('img/cnn'+str(i)+'-validation-accuracy.png')
+    fig.savefig('img/'+str(i)+'-validation-accuracy_cnn.png')
     plt.close(fig)
     
 def saveHistory(history, filename):
     import json
     json.dump(history.history, open('json_history/'+filename+'.json', 'w+'))
 
-def CNN_shape(shape):
+modelDef = Sequential()
+modelDef.add(Conv2D(32, (3, 3), padding='same', input_shape=x_train.shape[1:]))
+modelDef.add(Activation('relu'))
+modelDef.add(Conv2D(32,(3, 3)))
+modelDef.add(Activation('relu'))
+modelDef.add(MaxPooling2D(pool_size=(2, 2)))
+modelDef.add(Dropout(0.25))
+
+modelDef.add(Flatten())
+modelDef.add(Dense(512))
+modelDef.add(Activation('relu'))
+modelDef.add(Dropout(0.5))
+modelDef.add(Dense(nb_classes))
+modelDef.add(Activation('softmax'))
+
+modelDef.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+
+historyDef = modelDef.fit(x_train, y_train,
+                    batch_size=batch_size,
+                    epochs=nb_epoch,
+                    verbose=1,
+                    validation_data=(x_test, y_test))
+saveHistory(historyDef,'historyDef_CNN')
+
+model1 = Sequential()
+model1.add(Conv2D(32, (3, 3), padding='same', input_shape=x_train.shape[1:]))
+model1.add(Activation('relu'))
+model1.add(Conv2D(32,(3, 3)))
+model1.add(Activation('relu'))
+model1.add(MaxPooling2D(pool_size=(2, 2)))
+model1.add(Dropout(0.25))
+model1.add(Flatten())
+model1.add(Dense(512))
+#adding batch normalization before activation function
+model1.add(BatchNormalization())
+model1.add(Activation('relu'))
+model1.add(Dropout(0.5))
+model1.add(Dense(nb_classes))
+model1.add(BatchNormalization())
+#adding batch normalization before activation function
+model1.add(Activation('softmax'))
+model1.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+
+history1 = model1.fit(x_train, y_train,
+                    batch_size=batch_size,
+                    epochs=nb_epoch,
+                    verbose=1,
+                    validation_data=(x_test, y_test))
+saveHistory(history1,'history1_CNN')
+
+plot_train_acc(1, [historyDef, history1])
+plot_val_acc(2, [historyDef, history1])
+
+def CNN_drop_rate(drop_rate1, drop_rate2):
 
     model = Sequential()
     model.add(Conv2D(32, (3, 3), padding='same', input_shape=x_train.shape[1:]))
@@ -77,42 +127,33 @@ def CNN_shape(shape):
     model.add(Conv2D(32,(3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model.add(Dropout(drop_rate1))
 
     model.add(Flatten())
-    model.add(Dense(shape))
+    model.add(Dense(512))
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(drop_rate2))
     model.add(Dense(nb_classes))
     model.add(Activation('softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
     return model
 
-modelDef = CNN_shape(512) #default model
-historyDef = modelDef.fit(X_train, Y_train,
+model3 = CNN_drop_rate(0.1,0.3)
+model4 = CNN_drop_rate(0.5,0.5)
+
+history3 = model3.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
                     verbose=1,
-                    validation_data=(X_test, Y_test))
-saveHistory(historyDef,'historyDef_CNN')
-
-model1 = CNN_shape(256)
-model2 = CNN_shape(1024)
-
-history1 = model1.fit(X_train, Y_train,
+                    validation_data=(x_test, y_test))
+saveHistory(history3,'history3_CNN')
+history4 = model4.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
                     verbose=1,
-                    validation_data=(X_test, Y_test))
-saveHistory(history1,'history1_CNN')
+                    validation_data=(x_test, y_test))
+saveHistory(history4,'history4_CNN')
 
-history2 = model2.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=1,
-                    validation_data=(X_test, Y_test))
-saveHistory(history2,'history2_CNN')
-
-plot_train_acc(1, [historyDef, history1, history2])
-plot_val_acc(2, [historyDef, history1, history2])
+plot_train_acc(3, [historyDef, history3, history4])
+plot_val_acc(4, [historyDef, history3, history4])
