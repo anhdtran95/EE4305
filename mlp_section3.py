@@ -86,24 +86,6 @@ def MLP_shape(shape1, shape2):
     #model.summary()
     return(model)
 
-def MLP_learningRate(lr, decay):
-    model = Sequential()
-    model.add(Dense(512, input_shape=X_train.shape[1:]))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(256))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(10))
-    model.add(Activation('softmax'))
-    
-    sgd = SGD(lr=lr, momentum=0.0, decay=decay, nesterov=False)
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=sgd,
-                  metrics=['accuracy'])
-    #model.summary()
-    return(model)
-
 modelDef = MLP_shape(512, 256) #default model
 historyDef = modelDef.fit(X_train, Y_train,
                     batch_size=batch_size,
@@ -111,21 +93,31 @@ historyDef = modelDef.fit(X_train, Y_train,
                     verbose=2,
                     validation_data=(X_test, Y_test))
 saveHistory(historyDef,'historyDef')
-model6 = MLP_learningRate(0.3, 0.0)
-model7 = MLP_learningRate(0.1, 0.1/nb_epoch)
 
-history6 = model6.fit(X_train, Y_train,
+# model 5 has 3 hiden layers
+model5 = Sequential()
+model5.add(Dense(1024, input_shape=X_train.shape[1:]))
+model5.add(Activation('relu'))
+model5.add(Dropout(0.2))
+model5.add(Dense(512))
+model5.add(Activation('relu'))
+model5.add(Dropout(0.2)
+model5.add(Dense(256))
+model5.add(Activation('relu'))
+model5.add(Dropout(0.2))
+model5.add(Dense(10))
+model5.add(Activation('softmax'))
+
+model5.compile(loss='categorical_crossentropy',
+              optimizer='sgd',
+              metrics=['accuracy'])
+
+history5 = model5.fit(X_train, Y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
                     verbose=2,
                     validation_data=(X_test, Y_test))
-saveHistory(history6,'history6')
-history7 = model7.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=2,
-                    validation_data=(X_test, Y_test))
-saveHistory(history7,'history7')
-
-plot_train_acc(7, [historyDef, history6, history7])
-plot_val_acc(8, [historyDef, history6, history7])
+saveHistory(history5,'history5')
+           
+plot_train_acc(5 [historyDef, history5])
+plot_val_acc(6, [historyDef, history5])
