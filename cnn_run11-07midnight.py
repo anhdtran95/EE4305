@@ -48,7 +48,7 @@ def plot_train_acc(i, historyList):
     plt.grid(True)
     plt.title("Training Accuracy Comparison")
     #plt.show()
-    fig.savefig('img/'+str(i)+'-training-accuracy.png')
+    fig.savefig('img/cnn'+str(i)+'-training-accuracy.png')
     plt.close(fig)
     
 def plot_val_acc(i, historyList):
@@ -62,39 +62,57 @@ def plot_val_acc(i, historyList):
     plt.grid(True)
     plt.title("Validation Accuracy Comparison")
     #plt.show()
-    fig.savefig('img/'+str(i)+'-validation-accuracy.png')
+    fig.savefig('img/cnn'+str(i)+'-validation-accuracy.png')
     plt.close(fig)
     
 def saveHistory(history, filename):
     import json
     json.dump(history.history, open('json_history/'+filename+'.json', 'w+'))
 
-import json
-historyDef = json.load(open('json_history/historyDef.json'))
-# model 5 has 3 hiden layers
-model5 = Sequential()
-model5.add(Dense(1024, input_shape=X_train.shape[1:]))
-model5.add(Activation('relu'))
-model5.add(Dropout(0.2))
-model5.add(Dense(512))
-model5.add(Activation('relu'))
-model5.add(Dropout(0.2))
-model5.add(Dense(256))
-model5.add(Activation('relu'))
-model5.add(Dropout(0.2))
-model5.add(Dense(10))
-model5.add(Activation('softmax'))
+def CNN_shape(shape):
 
-model5.compile(loss='categorical_crossentropy',
-              optimizer='sgd',
-              metrics=['accuracy'])
+    model = Sequential()
+    model.add(Conv2D(32, (3, 3), padding='same', input_shape=x_train.shape[1:]))
+    model.add(Activation('relu'))
+    model.add(Conv2D(32,(3, 3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
 
-history5 = model5.fit(X_train, Y_train,
+    model.add(Flatten())
+    model.add(Dense(shape))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(nb_classes))
+    model.add(Activation('softmax'))
+
+    model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+    return model
+
+modelDef = CNN_shape(512) #default model
+historyDef = modelDef.fit(X_train, Y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=2,
+                    verbose=1,
                     validation_data=(X_test, Y_test))
-saveHistory(history5,'history5')
-           
-plot_train_acc(5 [historyDef, history5])
-plot_val_acc(6, [historyDef, history5])
+saveHistory(historyDef,'historyDef_CNN')
+
+model1 = CNN_shape(256)
+model2 = CNN_shape(1024)
+
+history1 = model1.fit(X_train, Y_train,
+                    batch_size=batch_size,
+                    epochs=nb_epoch,
+                    verbose=1,
+                    validation_data=(X_test, Y_test))
+saveHistory(history1,'history1_CNN')
+
+history2 = model2.fit(X_train, Y_train,
+                    batch_size=batch_size,
+                    epochs=nb_epoch,
+                    verbose=1,
+                    validation_data=(X_test, Y_test))
+saveHistory(history2,'history2_CNN')
+
+plot_train_acc(1, [historyDef, history1, history2])
+plot_val_acc(2, [historyDef, history1, history2])
