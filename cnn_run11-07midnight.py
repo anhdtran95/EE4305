@@ -86,7 +86,7 @@ modelDef.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['acc
 historyDef = modelDef.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=1,
+                    verbose=2,
                     validation_data=(x_test, y_test))
 saveHistory(historyDef,'historyDef_CNN')
 
@@ -112,7 +112,7 @@ model1.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accur
 history1 = model1.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=1,
+                    verbose=2,
                     validation_data=(x_test, y_test))
 saveHistory(history1,'history1_CNN')
 
@@ -145,15 +145,56 @@ model4 = CNN_drop_rate(0.5,0.5)
 history3 = model3.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=1,
+                    verbose=2,
                     validation_data=(x_test, y_test))
 saveHistory(history3,'history3_CNN')
 history4 = model4.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=nb_epoch,
-                    verbose=1,
+                    verbose=2,
                     validation_data=(x_test, y_test))
 saveHistory(history4,'history4_CNN')
 
 plot_train_acc(3, [historyDef, history3, history4])
 plot_val_acc(4, [historyDef, history3, history4])
+
+def CNN_learningRate(lr, decay):
+    model = Sequential()
+    model.add(Conv2D(32, (3, 3), padding='same', input_shape=x_train.shape[1:]))
+    model.add(Activation('relu'))
+    model.add(Conv2D(32,(3, 3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+
+    model.add(Flatten())
+    model.add(Dense(512))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(nb_classes))
+    model.add(Activation('softmax'))
+    
+    sgd = SGD(lr=lr, momentum=0.0, decay=decay, nesterov=False)
+    model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+    
+    #model.summary()
+    return(model)
+
+model6 = CNN_learningRate(0.3, 0.0)
+model7 = CNN_learningRate(0.1, 0.1/nb_epoch)
+
+history6 = model6.fit(x_train, y_train,
+                    batch_size=batch_size,
+                    epochs=nb_epoch,
+                    verbose=2,
+                    validation_data=(x_test, y_test))
+saveHistory(history6,'history6')
+history7 = model7.fit(x_train, y_train,
+                    batch_size=batch_size,
+                    epochs=nb_epoch,
+                    verbose=2,
+                    validation_data=(x_test, y_test))
+saveHistory(history7,'history7')
+
+plot_train_acc(7, [historyDef, history6, history7])
+plot_val_acc(8, [historyDef, history6, history7])
