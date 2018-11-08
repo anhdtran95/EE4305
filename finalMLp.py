@@ -69,40 +69,6 @@ def saveHistory(history, filename):
     import json
     json.dump(history.history, open('json_history/'+filename+'.json', 'w+'))
 
-def MLP_learningRate(lr, decay):
-    model = Sequential()
-    model.add(Dense(512, input_shape=X_train.shape[1:]))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(256))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(10))
-    model.add(Activation('softmax'))
-    
-    sgd = SGD(lr=lr, momentum=0.0, decay=decay, nesterov=False)
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=sgd,
-                  metrics=['accuracy'])
-    #model.summary()
-    return(model)
-
-def MLP_act_func(act_func):
-    model = Sequential()
-    model.add(Dense(512, input_shape=X_train.shape[1:]))
-    model.add(Activation(act_func))
-    model.add(Dropout(0.2))
-    model.add(Dense(256))
-    model.add(Activation(act_func))
-    model.add(Dropout(0.2))
-    model.add(Dense(10))
-    model.add(Activation('softmax'))
-
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='sgd',
-                  metrics=['accuracy'])
-    #model.summary()
-    return(model)
 
 import json
 historyDef = json.load(open('json_history/historyDef.json'))
@@ -120,8 +86,9 @@ model5.add(Dropout(0.2))
 model5.add(Dense(10))
 model5.add(Activation('softmax'))
 
+sgd = SGD(lr=0.05)
 model5.compile(loss='categorical_crossentropy',
-              optimizer='sgd',
+              optimizer=sgd,
               metrics=['accuracy'])
 
 history5 = model5.fit(X_train, Y_train,
@@ -129,45 +96,7 @@ history5 = model5.fit(X_train, Y_train,
                     epochs=nb_epoch,
                     verbose=2,
                     validation_data=(X_test, Y_test))
-saveHistory(history5,'history5')
+saveHistory(history5,'historyFINAL')
            
 plot_train_acc(5 [historyDef, history5.history])
 plot_val_acc(6, [historyDef, history5.history])
-
-model6 = MLP_learningRate(0.3, 0.0)
-model7 = MLP_learningRate(0.1, 0.1/nb_epoch)
-
-history6 = model6.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=2,
-                    validation_data=(X_test, Y_test))
-saveHistory(history6,'history6')
-history7 = model7.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=2,
-                    validation_data=(X_test, Y_test))
-saveHistory(history7,'history7')
-
-plot_train_acc(7, [historyDef, history6.history, history7.history])
-plot_val_acc(8, [historyDef, history6.history, history7.history])
-
-model8 = MLP_act_func('sigmoid')
-model9 = MLP_act_func('softplus')
-
-history8 = model8.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=1,
-                    validation_data=(X_test, Y_test))
-saveHistory(history8,'history8')
-history9 = model9.fit(X_train, Y_train,
-                    batch_size=batch_size,
-                    epochs=nb_epoch,
-                    verbose=1,
-                    validation_data=(X_test, Y_test))
-saveHistory(history9,'history9')
-
-plot_train_acc(7, [historyDef, history8.history, history9.history])
-plot_val_acc(8, [historyDef, history8.history, history9.history])
