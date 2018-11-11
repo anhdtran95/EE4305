@@ -1,0 +1,16 @@
+Dear Marker, The rar file contains the following:
+1) The A014418E CNN juPyter notebook includes testing done on the CNN
+2) The A014418E MLP juPyter notebook includes testing done on the MLP
+3) The report in Pdf and Word versions
+4) /json_history folder contains history files generated from MLP notebook only.
+5) /json_history(from lab) contains history files generated when I was running 
+models in a separate computer lab. These models are presented in the two noteboooks
+This is because my laptop is unable to run these models (due to GPU's poor performance)
+
+6) The /json_history(from lab) contains the following:
+6.1) The history files
+6.2) Plot.py is the script to generate different graphs from these history files
+6.3) /img folder contains these graphs. (for your reference)
+
+Thank you and sorry for any inconvenience caused.
+							~Tran Duy Anh.
